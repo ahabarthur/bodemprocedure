@@ -303,6 +303,8 @@
   #pillar-3{--issue:#4a2e52;}
   @media print{.topbar,.menu{display:none!important;} .pillar{display:none!important;} .pillar.active{display:block!important;}}
   @media (max-width:640px){.menu-btn{font-size:12px;padding:9px 5px;}}
+  .evidence-field a,.evidence-field .ev-link{color:var(--rebut);text-decoration:underline;cursor:pointer;font-weight:600;}
+  .evidence-field a:hover,.evidence-field .ev-link:hover{color:var(--ink);}
 </style>
 </head>
 <body>
@@ -338,7 +340,7 @@
       <div class="seg mine">
         <p class="seg-label">My evidence — I can deal with it</p>
         <ul class="points">
-          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">My roster — and therefore my home days — is known 4–5 weeks in advance; document this.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point open"><div class="point-row"><button class="toggle" type="button" aria-expanded="true" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">My roster — and therefore my home days — is known 4–5 weeks in advance; document this.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence"><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"><div>Crew rosters — KLM, rank SO, Fleet 778 (Roster Exhibits R-1 to R-4):</div><div><a href="roster-2025-08-25_to_09-22.pdf" target="_blank" rel="noopener" contenteditable="false" class="ev-link">R-1 — Roster 25 Aug to 22 Sep 2025 (GRU, PVG, PEK)</a></div><div><a href="roster-2025-04-07_to_05-05.pdf" target="_blank" rel="noopener" contenteditable="false" class="ev-link">R-2 — Roster 7 Apr to 5 May 2025 (PVG, LAS)</a></div><div><a href="roster-2023-03-06_to_04-04_standby-sim.pdf" target="_blank" rel="noopener" contenteditable="false" class="ev-link">R-3 — Roster 6 Mar to 4 Apr 2023 (incl. standby and simulator check)</a></div><div><a href="roster-2025-12-08_to_2026-01-05.pdf" target="_blank" rel="noopener" contenteditable="false" class="ev-link">R-4 — Roster 8 Dec 2025 to 5 Jan 2026 (NRT, BKK, AUS; spanning the holidays)</a></div><div>Each roster was published before the period began, showing home days known weeks in advance.</div></div></div></li>
           <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">A written, concrete care plan mapping duty days to who has the children each day.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
           <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">The children's environment stays constant (own home, own beds, same school).</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
         </ul>
@@ -979,6 +981,8 @@
   }
   document.addEventListener('click', function(e){
     var t = e.target;
+    var lnk = t.closest && t.closest('a[href]');
+    if(lnk){ e.preventDefault(); window.open(lnk.getAttribute('href'), '_blank', 'noopener'); return; }
     if(t.classList.contains('menu-btn')){ show(t.getAttribute('data-target')); return; }
     if(t.classList.contains('del-point')){ t.closest('li').remove(); return; }
     if(t.classList.contains('add-point')){
