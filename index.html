@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>50-50 Custody — Argument Map</title>
+<style>
+  :root{
+    --ink:#16202e;
+    --muted:#5a6675;
+    --paper:#eef0f3;
+    --panel:#ffffff;
+    --line:#d8dde4;
+    --line-soft:#e8ebef;
+    --issue:#1f3552;
+    --mine:#2f5d4a;
+    --mine-bg:#eef4f1;
+    --counter:#8a2e2a;
+    --counter-bg:#f7eeed;
+    --rebut:#2f4a7a;
+    --rebut-bg:#eef1f7;
+    --focus:#b8863b;
+    --serif:Georgia,"Iowan Old Style","Times New Roman",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--serif);
+    line-height:1.55;
+    padding:32px 20px 80px;
+  }
+  .sheet{
+    max-width:820px;
+    margin:0 auto;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:4px;
+    box-shadow:0 1px 0 rgba(22,32,46,.04),0 18px 40px -28px rgba(22,32,46,.4);
+    padding:48px 52px 56px;
+  }
+
+  /* Toolbar */
+  .toolbar{
+    position:sticky;
+    top:0;
+    z-index:20;
+    max-width:820px;
+    margin:0 auto 18px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    align-items:center;
+    font-family:var(--sans);
+  }
+  .toolbar .spacer{flex:1;}
+  button{
+    font-family:var(--sans);
+    font-size:13px;
+    font-weight:600;
+    letter-spacing:.01em;
+    color:var(--ink);
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:8px 13px;
+    cursor:pointer;
+    transition:background .12s ease,border-color .12s ease,transform .04s ease;
+  }
+  button:hover{background:#f3f5f8;border-color:#c4ccd6;}
+  button:active{transform:translateY(1px);}
+  button:focus-visible{outline:2px solid var(--focus);outline-offset:2px;}
+  button.primary{background:var(--ink);color:#fff;border-color:var(--ink);}
+  button.primary:hover{background:#23344a;}
+
+  /* Header */
+  .doc-head{border-bottom:2px solid var(--ink);padding-bottom:20px;margin-bottom:8px;}
+  .eyebrow{
+    font-family:var(--sans);
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin:0 0 10px;
+  }
+  h1{
+    font-size:30px;
+    line-height:1.15;
+    margin:0 0 12px;
+    font-weight:700;
+    letter-spacing:-.01em;
+  }
+  .lede{
+    font-size:15px;
+    color:var(--muted);
+    font-style:italic;
+    margin:0;
+    max-width:62ch;
+  }
+
+  /* Issue blocks */
+  .blocks{margin-top:30px;}
+  .block{
+    border:1px solid var(--line);
+    border-radius:5px;
+    margin-bottom:24px;
+    overflow:hidden;
+    background:var(--panel);
+  }
+  .block-head{
+    display:flex;
+    align-items:flex-start;
+    gap:14px;
+    padding:16px 18px 14px;
+    background:var(--issue);
+    color:#fff;
+  }
+  .num{
+    font-family:var(--sans);
+    font-weight:700;
+    font-size:13px;
+    background:rgba(255,255,255,.16);
+    border-radius:5px;
+    padding:4px 9px;
+    flex:0 0 auto;
+    margin-top:2px;
+  }
+  .issue-title{
+    font-size:18px;
+    font-weight:700;
+    flex:1;
+    line-height:1.3;
+  }
+  .issue-title:empty::before{content:"Describe the issue…";opacity:.55;}
+
+  .seg{padding:15px 18px;border-top:1px solid var(--line-soft);}
+  .seg:first-of-type{border-top:none;}
+  .seg-label{
+    font-family:var(--sans);
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.09em;
+    text-transform:uppercase;
+    margin:0 0 9px;
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+  }
+  .seg-label::before{
+    content:"";
+    width:9px;height:9px;border-radius:2px;flex:0 0 auto;
+  }
+  .seg.mine{background:var(--mine-bg);}
+  .seg.mine .seg-label{color:var(--mine);}
+  .seg.mine .seg-label::before{background:var(--mine);}
+  .seg.counter{background:var(--counter-bg);}
+  .seg.counter .seg-label{color:var(--counter);}
+  .seg.counter .seg-label::before{background:var(--counter);}
+  .seg.rebut{background:var(--rebut-bg);}
+  .seg.rebut .seg-label{color:var(--rebut);}
+  .seg.rebut .seg-label::before{background:var(--rebut);}
+
+  ul.points{list-style:none;margin:0;padding:0;}
+  ul.points li{
+    position:relative;
+    padding:3px 26px 3px 18px;
+    font-size:15px;
+  }
+  ul.points li::before{
+    content:"";
+    position:absolute;left:2px;top:12px;
+    width:6px;height:6px;border-radius:50%;
+    background:currentColor;opacity:.5;
+  }
+  .seg.mine ul.points li{color:var(--mine);}
+  .seg.counter ul.points li{color:var(--counter);}
+  .seg.rebut ul.points li{color:var(--rebut);}
+  ul.points li .txt{color:var(--ink);display:block;}
+  .counter-text{font-size:15px;color:var(--ink);}
+  .counter-text:empty::before{content:"Their likely argument…";opacity:.5;}
+
+  /* inline editing affordances */
+  [contenteditable]{outline:none;border-radius:3px;}
+  [contenteditable]:hover{box-shadow:inset 0 0 0 1px var(--line);}
+  [contenteditable]:focus{box-shadow:inset 0 0 0 2px var(--focus);background:rgba(184,134,59,.06);}
+
+  .del-point,.add-point,.del-block{
+    font-family:var(--sans);
+    border:none;background:none;cursor:pointer;padding:0;
+  }
+  .del-point{
+    position:absolute;right:2px;top:3px;
+    font-size:16px;line-height:1;color:var(--muted);
+    width:20px;height:22px;border-radius:4px;
+    opacity:0;transition:opacity .12s ease;
+  }
+  ul.points li:hover .del-point{opacity:.6;}
+  .del-point:hover{opacity:1!important;color:var(--counter);}
+  .add-point{
+    margin:8px 0 0 18px;font-size:13px;font-weight:600;color:var(--muted);
+  }
+  .add-point:hover{color:var(--ink);text-decoration:underline;}
+  .del-block{
+    color:rgba(255,255,255,.7);font-size:20px;line-height:1;
+    width:26px;height:26px;border-radius:5px;flex:0 0 auto;
+  }
+  .del-block:hover{color:#fff;background:rgba(255,255,255,.18);}
+
+  /* Core message */
+  .core{
+    margin-top:34px;
+    border:1px solid var(--ink);
+    border-left:5px solid var(--ink);
+    border-radius:5px;
+    padding:20px 22px;
+    background:#fbfcfd;
+  }
+  .core h2{
+    font-family:var(--sans);
+    font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+    margin:0 0 10px;color:var(--ink);
+  }
+  .core p{margin:0;font-size:16px;line-height:1.6;}
+
+  .disclaimer{
+    font-family:var(--sans);
+    font-size:12px;color:var(--muted);
+    margin-top:30px;padding-top:16px;border-top:1px solid var(--line-soft);
+    line-height:1.5;
+  }
+
+  .add-issue-wrap{text-align:center;margin-top:8px;}
+  button.add-issue{
+    font-size:14px;padding:11px 20px;border-style:dashed;color:var(--muted);
+  }
+  button.add-issue:hover{color:var(--ink);border-color:var(--ink);background:#f3f5f8;}
+
+  @media (max-width:640px){
+    body{padding:16px 10px 60px;}
+    .sheet{padding:28px 20px 36px;}
+    h1{font-size:24px;}
+  }
+
+  @media print{
+    body{background:#fff;padding:0;}
+    .toolbar{display:none;}
+    .sheet{box-shadow:none;border:none;max-width:none;padding:0;}
+    .del-point,.add-point,.del-block,.add-issue-wrap{display:none!important;}
+    .block{break-inside:avoid;}
+    [contenteditable]:hover{box-shadow:none;}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+
+<div class="toolbar" role="toolbar" aria-label="Document actions">
+  <button class="primary" onclick="download()">Download editable copy</button>
+  <button onclick="window.print()">Print / Save as PDF</button>
+  <span class="spacer"></span>
+  <button onclick="document.querySelector('.add-issue').click()">+ Add issue</button>
+</div>
+
+<div class="sheet" id="sheet">
+
+  <header class="doc-head">
+    <p class="eyebrow">Family court — preparation notes</p>
+    <h1 contenteditable="true">50-50 Custody — Argument Map</h1>
+    <p class="lede" contenteditable="true">Establishing that an irregular pilot roster does not undermine stability for the children (ages 4 and 6). Working framework — confirm procedural specifics with your advocaat.</p>
+  </header>
+
+  <div class="blocks" id="blocks">
+    <!-- Block 1 -->
+    <section class="block">
+      <div class="block-head">
+        <span class="num">1</span>
+        <div class="issue-title" contenteditable="true">An irregular roster means no stable routine.</div>
+        <button class="del-block" title="Delete this issue" aria-label="Delete issue">&times;</button>
+      </div>
+      <div class="seg mine">
+        <p class="seg-label">My evidence — I can deal with it</p>
+        <ul class="points">
+          <li><span class="txt" contenteditable="true">Airline rosters are published weeks in advance — document how far ahead yours publishes.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
+          <li><span class="txt" contenteditable="true">A written, concrete care plan mapping duty days to who has the children each day.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
+          <li><span class="txt" contenteditable="true">The children's environment stays constant (own home, own beds, same school).</span><button class="del-point" aria-label="Delete point">&times;</button></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>
+      <div class="seg counter">
+        <p class="seg-label">Counter-argument</p>
+        <p class="counter-text" contenteditable="true">"Stability means the same parent present daily; he can't provide that."</p>
+      </div>
+      <div class="seg rebut">
+        <p class="seg-label">Evidence to deconstruct it</p>
+        <ul class="points">
+          <li><span class="txt" contenteditable="true">Define stability correctly: predictability, emotional security, consistent environment — not an identical daily schedule.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
+          <li><span class="txt" contenteditable="true">A sample roster-to-care calendar (one representative month) showing the plan works in practice.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
+          <li><span class="txt" contenteditable="true">Many "normal" jobs (on-call, overtime, last-minute travel) are less predictable than a published roster.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>
+    </section>
+
+    <!-- Block 2 -->
+    <section class="block">
+      <div class="block-head">
+        <span class="num">2</span>
+        <div class="issue-title" contenteditable="true">When he flies, his mother raises the children, not him.</div>
+        <button class="del-block" title="Delete this issue" aria-label="Delete issue">&times;</button>
+      </div>
+      <div class="seg mine">
+        <p class="seg-label">My evidence — I can deal with it</p>
+        <ul class="points">
+          <li><span class="txt" contenteditable="true">Grandmother lives 15 min away, reliable on short notice, already known and loved by the children.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
+          <li><span class="txt" contenteditable="true">Position her as a named safety net and supplement, documented in the care plan.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
+          <li><span class="txt" contenteditable="true">A short written statement from your mother confirming her role and availability.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>
+      <div class="seg counter">
+        <p class="seg-label">Counter-argument</p>
+        <p class="counter-text" contenteditable="true">"This is grandmother-care dressed up as father-care — he isn't really asking for 50-50."</p>
+      </div>
+      <div class="seg rebut">
+        <p class="seg-label">Evidence to deconstruct it</p>
+        <ul class="points">
+          <li><span class="txt" contenteditable="true">Show the majority of custodial time is genuinely you (depends on roster type — see Issue 3).</span><button class="del-point" aria-label="Delete point">&times;</button></li>
+          <li><span class="txt" contenteditable="true">Records of direct, hands-on caregiving: meals, bath, bedtime, school runs, medical appointments.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
+          <li><span class="txt" contenteditable="true">Frame grandmother as family continuity (kids stay in their kin network), not a paid substitute.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>
+    </section>
+
+    <!-- Block 3 -->
+    <section class="block">
+      <div class="block-head">
+        <span class="num">3</span>
+        <div class="issue-title" contenteditable="true">Multi-day trips mean repeated overnights away from the children.</div>
+        <button class="del-block" title="Delete this issue" aria-label="Delete issue">&times;</button>
+      </div>
+      <div class="seg mine">
+        <p class="seg-label">My evidence — I can deal with it</p>
+        <ul class="points">
+          <li><span class="txt" contenteditable="true">Continuity of caregiver and environment: children stay in their home with a consistent, trusted adult.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
+          <li><span class="txt" contenteditable="true">Good-faith roster planning — bidding for clustered trips, requesting roster stability for family reasons.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>
+      <div class="seg counter">
+        <p class="seg-label">Counter-argument</p>
+        <p class="counter-text" contenteditable="true">"Two very young children need a parent present overnight; grandma is carrying core parenting."</p>
+      </div>
+      <div class="seg rebut">
+        <p class="seg-label">Evidence to deconstruct it</p>
+        <ul class="points">
+          <li><span class="txt" contenteditable="true">If short-haul: show duties are largely same-day / single-overnight; align "on" weeks with lighter roster periods.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
+          <li><span class="txt" contenteditable="true">If long-haul: document requests for roster accommodation; propose a substantial-but-realistic split if honesty requires it.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
+          <li><span class="txt" contenteditable="true">Show overnights away are limited in number and predictable, not random or frequent.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>
+    </section>
+
+    <!-- Block 4 -->
+    <section class="block">
+      <div class="block-head">
+        <span class="num">4</span>
+        <div class="issue-title" contenteditable="true">Young children (4 and 6) especially need routine.</div>
+        <button class="del-block" title="Delete this issue" aria-label="Delete issue">&times;</button>
+      </div>
+      <div class="seg mine">
+        <p class="seg-label">My evidence — I can deal with it</p>
+        <ul class="points">
+          <li><span class="txt" contenteditable="true">Both are in basisschool — school is an external stability anchor regardless of which parent has them.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
+          <li><span class="txt" contenteditable="true">A large part of any weekday is school, not parenting, for either parent.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>
+      <div class="seg counter">
+        <p class="seg-label">Counter-argument</p>
+        <p class="counter-text" contenteditable="true">"Precisely because they're young, disruption is more harmful."</p>
+      </div>
+      <div class="seg rebut">
+        <p class="seg-label">Evidence to deconstruct it</p>
+        <ul class="points">
+          <li><span class="txt" contenteditable="true">Your trips largely overlap with school hours — minimal disruption to the children's actual day.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
+          <li><span class="txt" contenteditable="true">Constant anchors regardless of your roster: same home, school, teachers, grandmother, friends.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
+          <li><span class="txt" contenteditable="true">Evidence of the children's secure bond with you (settled room, belongings, daily involvement).</span><button class="del-point" aria-label="Delete point">&times;</button></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="add-issue-wrap">
+    <button class="add-issue">+ Add issue</button>
+  </div>
+
+  <div class="core">
+    <h2>Core message to the court</h2>
+    <p contenteditable="true">The children's environment stays constant — their home, school, grandmother, and a father present the large majority of the time — and the published-in-advance nature of the work means continuity can be planned more reliably than for a parent with unpredictable hours.</p>
+  </div>
+
+  <p class="disclaimer" contenteditable="true">Note: This is a personal preparation document, not legal advice. Verify all procedural points and admissibility with your advocaat before relying on anything here in court.</p>
+
+</div>
+
+<script>
+  const blocks = document.getElementById('blocks');
+
+  // Event delegation for all interactive controls
+  document.addEventListener('click', function(e){
+    const t = e.target;
+
+    if (t.classList.contains('del-point')) {
+      t.closest('li').remove();
+    }
+    else if (t.classList.contains('add-point')) {
+      const ul = t.previousElementSibling;
+      const li = document.createElement('li');
+      li.innerHTML = '<span class="txt" contenteditable="true"></span><button class="del-point" aria-label="Delete point">&times;</button>';
+      ul.appendChild(li);
+      li.querySelector('.txt').focus();
+    }
+    else if (t.classList.contains('del-block')) {
+      if (confirm('Delete this entire issue?')) {
+        t.closest('.block').remove();
+        renumber();
+      }
+    }
+    else if (t.classList.contains('add-issue')) {
+      addBlock();
+    }
+  });
+
+  function renumber(){
+    document.querySelectorAll('.block .num').forEach((n,i)=> n.textContent = i+1);
+  }
+
+  function addBlock(){
+    const n = blocks.querySelectorAll('.block').length + 1;
+    const sec = document.createElement('section');
+    sec.className = 'block';
+    sec.innerHTML = `
+      <div class="block-head">
+        <span class="num">${n}</span>
+        <div class="issue-title" contenteditable="true"></div>
+        <button class="del-block" title="Delete this issue" aria-label="Delete issue">&times;</button>
+      </div>
+      <div class="seg mine">
+        <p class="seg-label">My evidence — I can deal with it</p>
+        <ul class="points">
+          <li><span class="txt" contenteditable="true"></span><button class="del-point" aria-label="Delete point">&times;</button></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>
+      <div class="seg counter">
+        <p class="seg-label">Counter-argument</p>
+        <p class="counter-text" contenteditable="true"></p>
+      </div>
+      <div class="seg rebut">
+        <p class="seg-label">Evidence to deconstruct it</p>
+        <ul class="points">
+          <li><span class="txt" contenteditable="true"></span><button class="del-point" aria-label="Delete point">&times;</button></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>`;
+    blocks.appendChild(sec);
+    sec.querySelector('.issue-title').focus();
+  }
+
+  // Download the current edited document as a fresh, still-editable HTML file
+  function download(){
+    const clone = document.documentElement.cloneNode(true);
+    // strip transient focus styling artifacts if any
+    const html = '<!DOCTYPE html>\n' + clone.outerHTML;
+    const blob = new Blob([html], {type:'text/html'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'custody-argument-map.html';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+  window.download = download;
+</script>
+</body>
+</html>
