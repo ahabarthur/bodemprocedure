@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>50-50 Custody — Argument Map</title>
+<title>Divorce Case File — Argument Maps</title>
 <style>
   :root{
     --ink:#16202e;
@@ -165,21 +165,45 @@
   .seg.rebut .seg-label::before{background:var(--rebut);}
 
   ul.points{list-style:none;margin:0;padding:0;}
-  ul.points li{
-    position:relative;
-    padding:3px 26px 3px 18px;
-    font-size:15px;
+  .point{
+    border:1px solid var(--line-soft);
+    border-radius:7px;
+    margin-bottom:7px;
+    background:rgba(255,255,255,.55);
+    overflow:hidden;
+    transition:border-color .12s ease,background .12s ease;
   }
-  ul.points li::before{
-    content:"";
-    position:absolute;left:2px;top:12px;
-    width:6px;height:6px;border-radius:50%;
-    background:currentColor;opacity:.5;
+  .point:hover{border-color:var(--line);}
+  .point.open{border-color:var(--line);background:#fff;}
+  .seg.mine .point{color:var(--mine);}
+  .seg.rebut .point{color:var(--rebut);}
+  .point-row{
+    display:flex;align-items:flex-start;gap:9px;
+    padding:8px 10px 8px 9px;cursor:pointer;
   }
-  .seg.mine ul.points li{color:var(--mine);}
-  .seg.counter ul.points li{color:var(--counter);}
-  .seg.rebut ul.points li{color:var(--rebut);}
-  ul.points li .txt{color:var(--ink);display:block;}
+  .point-row:hover{background:rgba(22,32,46,.025);}
+  .toggle{
+    flex:0 0 auto;font-size:15px;line-height:1.4;
+    padding:0 2px;color:currentColor;opacity:.6;
+    transform:rotate(0deg);
+    transition:transform .15s ease,opacity .12s ease;
+  }
+  .point:hover .toggle{opacity:.9;}
+  .point.open .toggle{transform:rotate(90deg);opacity:1;}
+  .point-row .txt{flex:1;color:var(--ink);cursor:text;font-size:15px;line-height:1.5;}
+  .point-row .txt:hover{box-shadow:none;}
+  .evidence{padding:0 12px 12px 30px;}
+  .evidence-label{
+    font-family:var(--sans);font-size:10px;font-weight:700;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+    margin:0 0 6px;
+  }
+  .evidence-field{
+    min-height:54px;border:1px dashed var(--line);border-radius:7px;
+    padding:9px 11px;font-size:14px;line-height:1.55;color:var(--ink);
+    background:#fff;font-family:var(--serif);
+  }
+  .evidence-field:empty::before{content:attr(data-ph);color:var(--muted);opacity:.65;}
   .counter-text{font-size:15px;color:var(--ink);}
   .counter-text:empty::before{content:"Their likely argument…";opacity:.5;}
 
@@ -193,15 +217,14 @@
     border:none;background:none;cursor:pointer;padding:0;
   }
   .del-point{
-    position:absolute;right:2px;top:3px;
-    font-size:16px;line-height:1;color:var(--muted);
+    flex:0 0 auto;font-size:16px;line-height:1.2;color:var(--muted);
     width:20px;height:22px;border-radius:4px;
-    opacity:0;transition:opacity .12s ease;
+    opacity:0;transition:opacity .12s ease,color .12s ease;
   }
-  ul.points li:hover .del-point{opacity:.6;}
-  .del-point:hover{opacity:1!important;color:var(--counter);}
+  .point-row:hover .del-point{opacity:.5;}
+  .del-point:hover{opacity:1!important;color:var(--counter);background:rgba(22,32,46,.05);}
   .add-point{
-    margin:8px 0 0 18px;font-size:13px;font-weight:600;color:var(--muted);
+    margin:9px 0 2px 30px;font-size:13px;font-weight:600;color:var(--muted);
   }
   .add-point:hover{color:var(--ink);text-decoration:underline;}
   .del-block{
@@ -249,31 +272,62 @@
     body{background:#fff;padding:0;}
     .toolbar{display:none;}
     .sheet{box-shadow:none;border:none;max-width:none;padding:0;}
-    .del-point,.add-point,.del-block,.add-issue-wrap{display:none!important;}
+    .del-point,.add-point,.del-block,.add-issue-wrap,.toggle{display:none!important;}
     .block{break-inside:avoid;}
     [contenteditable]:hover{box-shadow:none;}
   }
   @media (prefers-reduced-motion:reduce){*{transition:none!important;}}
+
+  .suite-nav{max-width:820px;margin:0 auto 12px;display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-family:var(--sans);}
+  .suite-brand{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-right:2px;}
+  .suite-nav a{font-size:13px;font-weight:600;text-decoration:none;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:6px 13px;background:var(--panel);transition:background .12s ease,color .12s ease,border-color .12s ease;}
+  .suite-nav a:hover{color:var(--ink);border-color:#c4ccd6;}
+  .suite-nav a.snav-active{color:#fff;background:var(--issue);border-color:var(--issue);}
+  @media print{.suite-nav{display:none!important;}}
+
+  /* Top menu + pillar switching */
+  .topbar{position:sticky;top:0;z-index:30;background:var(--paper);max-width:820px;margin:0 auto;padding-top:10px;}
+  .toolbar{position:static;top:auto;z-index:auto;margin:0 auto 10px;}
+  .menu{display:flex;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:5px;margin:0 auto 10px;}
+  .menu-btn{flex:1;border:none;background:none;border-radius:8px;padding:11px 10px;font-family:var(--sans);font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:background .12s ease,color .12s ease;}
+  .menu-btn:hover{color:var(--ink);background:#f0f2f5;}
+  .menu-btn.active{color:#fff;}
+  .menu-btn[data-target="pillar-1"].active{background:#1f3552;}
+  .menu-btn[data-target="pillar-2"].active{background:#1f4d3b;}
+  .menu-btn[data-target="pillar-3"].active{background:#4a2e52;}
+  .menu-btn:focus-visible{outline:2px solid var(--focus);outline-offset:2px;}
+  .pillar{display:none;}
+  .pillar.active{display:block;}
+  #pillar-1{--issue:#1f3552;}
+  #pillar-2{--issue:#1f4d3b;}
+  #pillar-3{--issue:#4a2e52;}
+  @media print{.topbar,.menu{display:none!important;} .pillar{display:none!important;} .pillar.active{display:block!important;}}
+  @media (max-width:640px){.menu-btn{font-size:12px;padding:9px 5px;}}
 </style>
 </head>
 <body>
-
-<div class="toolbar" role="toolbar" aria-label="Document actions">
-  <button class="primary" onclick="download()">Download editable copy</button>
-  <button onclick="window.print()">Print / Save as PDF</button>
-  <span class="spacer"></span>
-  <button onclick="document.querySelector('.add-issue').click()">+ Add issue</button>
-</div>
-
-<div class="sheet" id="sheet">
-
-  <header class="doc-head">
-    <p class="eyebrow">Family court — preparation notes</p>
-    <h1 contenteditable="true">50-50 Custody — Argument Map</h1>
-    <p class="lede" contenteditable="true">Establishing that an irregular pilot roster does not undermine stability for the children (ages 4 and 6). Working framework — confirm procedural specifics with your advocaat.</p>
+  <header class="topbar">
+    <nav class="menu" role="tablist" aria-label="Case sections">
+      <button class="menu-btn active" data-target="pillar-1" type="button">Custody &amp; parenting</button>
+      <button class="menu-btn" data-target="pillar-2" type="button">Financial matters</button>
+      <button class="menu-btn" data-target="pillar-3" type="button">Conduct &amp; safety</button>
+    </nav>
+    <div class="toolbar" role="toolbar" aria-label="Document actions">
+      <button class="primary" onclick="download()">Download editable copy</button>
+      <button onclick="window.print()">Print / Save as PDF</button>
+      <span class="spacer"></span>
+      <button onclick="document.querySelector('.pillar.active .add-issue').click()">+ Add issue</button>
+    </div>
   </header>
 
-  <div class="blocks" id="blocks">
+  <div class="sheet pillar active" id="pillar-1">
+    <header class="doc-head">
+    <p class="eyebrow">Family court — custody and parenting</p>
+    <h1 contenteditable="true">Custody and Parenting — Argument Map</h1>
+    <p class="lede" contenteditable="true">Establishing that a long-haul roster does not undermine stability for the children (ages 4 and 6). Pattern: trips of 3–6 days (averaging ~4.5), each followed by an equal stretch at home; the children are with me on my home days, which are known 4–5 weeks in advance. This gives close to equal nights and frequent, predictable father contact. Working framework — confirm procedural specifics with your advocaat.</p>
+  </header>
+
+    <div class="blocks">
     <!-- Block 1 -->
     <section class="block">
       <div class="block-head">
@@ -284,9 +338,9 @@
       <div class="seg mine">
         <p class="seg-label">My evidence — I can deal with it</p>
         <ul class="points">
-          <li><span class="txt" contenteditable="true">Airline rosters are published weeks in advance — document how far ahead yours publishes.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
-          <li><span class="txt" contenteditable="true">A written, concrete care plan mapping duty days to who has the children each day.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
-          <li><span class="txt" contenteditable="true">The children's environment stays constant (own home, own beds, same school).</span><button class="del-point" aria-label="Delete point">&times;</button></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">My roster — and therefore my home days — is known 4–5 weeks in advance; document this.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">A written, concrete care plan mapping duty days to who has the children each day.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">The children's environment stays constant (own home, own beds, same school).</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
         </ul>
         <button class="add-point">+ Add point</button>
       </div>
@@ -297,9 +351,9 @@
       <div class="seg rebut">
         <p class="seg-label">Evidence to deconstruct it</p>
         <ul class="points">
-          <li><span class="txt" contenteditable="true">Define stability correctly: predictability, emotional security, consistent environment — not an identical daily schedule.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
-          <li><span class="txt" contenteditable="true">A sample roster-to-care calendar (one representative month) showing the plan works in practice.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
-          <li><span class="txt" contenteditable="true">Many "normal" jobs (on-call, overtime, last-minute travel) are less predictable than a published roster.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Define stability correctly: predictability, emotional security, consistent environment — not an identical daily schedule.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">A sample roster-to-care calendar (one representative month) showing the plan works in practice.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Many "normal" jobs (on-call, overtime, last-minute travel) are less predictable than a published roster.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
         </ul>
         <button class="add-point">+ Add point</button>
       </div>
@@ -315,9 +369,9 @@
       <div class="seg mine">
         <p class="seg-label">My evidence — I can deal with it</p>
         <ul class="points">
-          <li><span class="txt" contenteditable="true">Grandmother lives 15 min away, reliable on short notice, already known and loved by the children.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
-          <li><span class="txt" contenteditable="true">Position her as a named safety net and supplement, documented in the care plan.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
-          <li><span class="txt" contenteditable="true">A short written statement from your mother confirming her role and availability.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Grandmother lives 15 min away, reliable on short notice, already known and loved by the children.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Position her as a named safety net and supplement, documented in the care plan.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">A short written statement from your mother confirming her role and availability.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
         </ul>
         <button class="add-point">+ Add point</button>
       </div>
@@ -328,9 +382,9 @@
       <div class="seg rebut">
         <p class="seg-label">Evidence to deconstruct it</p>
         <ul class="points">
-          <li><span class="txt" contenteditable="true">Show the majority of custodial time is genuinely you (depends on roster type — see Issue 3).</span><button class="del-point" aria-label="Delete point">&times;</button></li>
-          <li><span class="txt" contenteditable="true">Records of direct, hands-on caregiving: meals, bath, bedtime, school runs, medical appointments.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
-          <li><span class="txt" contenteditable="true">Frame grandmother as family continuity (kids stay in their kin network), not a paid substitute.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">My custodial days are deliberately scheduled for when I am home and off duty — so during them I am the primary carer, not my mother.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Records of direct, hands-on caregiving: meals, bath, bedtime, school runs, medical appointments.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Frame grandmother as family continuity (kids stay in their kin network), not a paid substitute.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
         </ul>
         <button class="add-point">+ Add point</button>
       </div>
@@ -340,27 +394,30 @@
     <section class="block">
       <div class="block-head">
         <span class="num">3</span>
-        <div class="issue-title" contenteditable="true">Multi-day trips mean repeated overnights away from the children.</div>
+        <div class="issue-title" contenteditable="true">Flying means repeated absences from very young children.</div>
         <button class="del-block" title="Delete this issue" aria-label="Delete issue">&times;</button>
       </div>
       <div class="seg mine">
         <p class="seg-label">My evidence — I can deal with it</p>
         <ul class="points">
-          <li><span class="txt" contenteditable="true">Continuity of caregiver and environment: children stay in their home with a consistent, trusted adult.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
-          <li><span class="txt" contenteditable="true">Good-faith roster planning — bidding for clustered trips, requesting roster stability for family reasons.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Trips are short: 3–6 days, averaging about 4.5 — the children are never away from me for long.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Each trip is followed by an equal stretch at home, and I take the children on those home days — so contact is frequent, every few days rather than every few weeks.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">All my home days are known 4–5 weeks in advance, so every separation and return is planned, never a surprise.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Home days are fully off duty: during them I am present the whole time, not splitting attention with work.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
         </ul>
         <button class="add-point">+ Add point</button>
       </div>
       <div class="seg counter">
         <p class="seg-label">Counter-argument</p>
-        <p class="counter-text" contenteditable="true">"Two very young children need a parent present overnight; grandma is carrying core parenting."</p>
+        <p class="counter-text" contenteditable="true">"Repeated multi-day absences are still unsettling for a 4- and 6-year-old, however short each one is."</p>
       </div>
       <div class="seg rebut">
         <p class="seg-label">Evidence to deconstruct it</p>
         <ul class="points">
-          <li><span class="txt" contenteditable="true">If short-haul: show duties are largely same-day / single-overnight; align "on" weeks with lighter roster periods.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
-          <li><span class="txt" contenteditable="true">If long-haul: document requests for roster accommodation; propose a substantial-but-realistic split if honesty requires it.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
-          <li><span class="txt" contenteditable="true">Show overnights away are limited in number and predictable, not random or frequent.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">The maximum absence is about six days and the average under five — far shorter than many away-working parents' stretches.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">A fixed daily contact routine during trips (video / phone at a set time) keeps the connection continuous.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">The rhythm is regular and predictable, so the children learn the pattern: dad goes, dad reliably comes back.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">This gives the children more frequent father contact than a standard every-other-weekend default.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
         </ul>
         <button class="add-point">+ Add point</button>
       </div>
@@ -376,8 +433,8 @@
       <div class="seg mine">
         <p class="seg-label">My evidence — I can deal with it</p>
         <ul class="points">
-          <li><span class="txt" contenteditable="true">Both are in basisschool — school is an external stability anchor regardless of which parent has them.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
-          <li><span class="txt" contenteditable="true">A large part of any weekday is school, not parenting, for either parent.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Both are in basisschool — school is an external stability anchor regardless of which parent has them.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">A large part of any weekday is school, not parenting, for either parent.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
         </ul>
         <button class="add-point">+ Add point</button>
       </div>
@@ -388,108 +445,567 @@
       <div class="seg rebut">
         <p class="seg-label">Evidence to deconstruct it</p>
         <ul class="points">
-          <li><span class="txt" contenteditable="true">Your trips largely overlap with school hours — minimal disruption to the children's actual day.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
-          <li><span class="txt" contenteditable="true">Constant anchors regardless of your roster: same home, school, teachers, grandmother, friends.</span><button class="del-point" aria-label="Delete point">&times;</button></li>
-          <li><span class="txt" contenteditable="true">Evidence of the children's secure bond with you (settled room, belongings, daily involvement).</span><button class="del-point" aria-label="Delete point">&times;</button></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Your trips largely overlap with school hours — minimal disruption to the children's actual day.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Constant anchors regardless of your roster: same home, school, teachers, grandmother, friends.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Evidence of the children's secure bond with you (settled room, belongings, daily involvement).</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>
+    </section>
+
+    <!-- Block 5 -->
+    <section class="block">
+      <div class="block-head">
+        <span class="num">5</span>
+        <div class="issue-title" contenteditable="true">The care days change every cycle, so there is no fixed routine.</div>
+        <button class="del-block" title="Delete this issue" aria-label="Delete issue">&times;</button>
+      </div>
+      <div class="seg mine">
+        <p class="seg-label">My evidence — I can deal with it</p>
+        <ul class="points">
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Each cycle's care dates are set from the published roster and shared with the other parent and the school 4–5 weeks in advance.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">The structure is constant even when the dates move: the children are always with me on my home days — close to half of all days.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>
+      <div class="seg counter">
+        <p class="seg-label">Counter-argument</p>
+        <p class="counter-text" contenteditable="true">"A young child needs the same days each week; a pattern that shifts every month is itself a form of instability."</p>
+      </div>
+      <div class="seg rebut">
+        <p class="seg-label">Evidence to deconstruct it</p>
+        <ul class="points">
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Predictability comes from advance notice and a constant structure, not from identical calendar dates.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Propose a shared digital calendar so both households and the school always see the upcoming cycle.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">The children's primary home and school stay fixed throughout — only which days are "with dad" shift, and always with notice.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>
+    </section>
+
+    <!-- Block 6 -->
+    <section class="block">
+      <div class="block-head">
+        <span class="num">6</span>
+        <div class="issue-title" contenteditable="true">Switching between two homes every few days is too much for young children.</div>
+        <button class="del-block" title="Delete this issue" aria-label="Delete issue">&times;</button>
+      </div>
+      <div class="seg mine">
+        <p class="seg-label">My evidence — I can deal with it</p>
+        <ul class="points">
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Handovers follow my work rhythm — roughly every four to five days — not daily chopping and changing.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Every transition is known 4–5 weeks ahead, so both parents and the children can prepare for it calmly.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>
+      <div class="seg counter">
+        <p class="seg-label">Counter-argument</p>
+        <p class="counter-text" contenteditable="true">"Frequent moves between homes deny young children the settled, single-base routine they need."</p>
+      </div>
+      <div class="seg rebut">
+        <p class="seg-label">Evidence to deconstruct it</p>
+        <ul class="points">
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Keep both homes' routines aligned — same bedtimes, same rules, a duplicate set of essentials — so a move is a change of place, not of routine.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Transitions are spaced every few days, predictable, and tied to a clear reason the children can understand.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Consider a defined primary residence and school so one base stays constant, with my blocks structured around it (discuss with advocaat).</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">The realistic alternative — the children seeing their father far less — is the worse outcome for their security and bond.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
         </ul>
         <button class="add-point">+ Add point</button>
       </div>
     </section>
   </div>
 
-  <div class="add-issue-wrap">
-    <button class="add-issue">+ Add issue</button>
-  </div>
+    <div class="add-issue-wrap">
+      <button class="add-issue">+ Add issue</button>
+    </div>
 
-  <div class="core">
+    <div class="core">
     <h2>Core message to the court</h2>
-    <p contenteditable="true">The children's environment stays constant — their home, school, grandmother, and a father present the large majority of the time — and the published-in-advance nature of the work means continuity can be planned more reliably than for a parent with unpredictable hours.</p>
+    <p contenteditable="true">The proposal gives the children close to equal nights with each parent. My time with them falls on my home days — short trips of three to six days, then an equal stretch at home — all known four to five weeks in advance. Separations are brief and predictable, daily contact continues during trips, my home days are entirely off duty, and one home and school stay constant throughout. The result is frequent, concentrated father contact that most working parents cannot match.</p>
   </div>
 
-  <p class="disclaimer" contenteditable="true">Note: This is a personal preparation document, not legal advice. Verify all procedural points and admissibility with your advocaat before relying on anything here in court.</p>
+    <p class="disclaimer" contenteditable="true">Note: This is a personal preparation document, not legal advice. Verify all procedural points and admissibility with your advocaat before relying on anything here in court.</p>
+  </div>
 
-</div>
+  <div class="sheet pillar" id="pillar-2">
+    <header class="doc-head">
+    <p class="eyebrow">Family court — financial disclosure</p>
+    <h1 contenteditable="true">Financial Matters — Argument Map</h1>
+    <p class="lede" contenteditable="true">Building one complete, documented and internally consistent financial picture — income, assets, possible hidden assets, support and the division of property. Everything here should be verifiable against statements and tax filings. Working framework — confirm procedural specifics with your advocaat or a financial adviser; this is not financial or legal advice.</p>
+  </header>
 
-<script>
-  const blocks = document.getElementById('blocks');
-
-  // Event delegation for all interactive controls
-  document.addEventListener('click', function(e){
-    const t = e.target;
-
-    if (t.classList.contains('del-point')) {
-      t.closest('li').remove();
-    }
-    else if (t.classList.contains('add-point')) {
-      const ul = t.previousElementSibling;
-      const li = document.createElement('li');
-      li.innerHTML = '<span class="txt" contenteditable="true"></span><button class="del-point" aria-label="Delete point">&times;</button>';
-      ul.appendChild(li);
-      li.querySelector('.txt').focus();
-    }
-    else if (t.classList.contains('del-block')) {
-      if (confirm('Delete this entire issue?')) {
-        t.closest('.block').remove();
-        renumber();
-      }
-    }
-    else if (t.classList.contains('add-issue')) {
-      addBlock();
-    }
-  });
-
-  function renumber(){
-    document.querySelectorAll('.block .num').forEach((n,i)=> n.textContent = i+1);
-  }
-
-  function addBlock(){
-    const n = blocks.querySelectorAll('.block').length + 1;
-    const sec = document.createElement('section');
-    sec.className = 'block';
-    sec.innerHTML = `
+    <div class="blocks">
+    <!-- Block 1 -->
+    <section class="block">
       <div class="block-head">
-        <span class="num">${n}</span>
-        <div class="issue-title" contenteditable="true"></div>
+        <span class="num">1</span>
+        <div class="issue-title" contenteditable="true">Establishing the true income of both parties.</div>
         <button class="del-block" title="Delete this issue" aria-label="Delete issue">&times;</button>
       </div>
       <div class="seg mine">
         <p class="seg-label">My evidence — I can deal with it</p>
         <ul class="points">
-          <li><span class="txt" contenteditable="true"></span><button class="del-point" aria-label="Delete point">&times;</button></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Payslips, employment contract, and annual statement (jaaropgaaf) for the full period.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Most recent tax returns (aangifte inkomstenbelasting) and assessments, for consistency.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">For a pilot: separate base salary from per-diems and allowances, which are expense reimbursements, not income.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
         </ul>
         <button class="add-point">+ Add point</button>
       </div>
       <div class="seg counter">
         <p class="seg-label">Counter-argument</p>
-        <p class="counter-text" contenteditable="true"></p>
+        <p class="counter-text" contenteditable="true">"His pilot income is far higher than declared once bonuses, allowances and foreign earnings are counted."</p>
       </div>
       <div class="seg rebut">
         <p class="seg-label">Evidence to deconstruct it</p>
         <ul class="points">
-          <li><span class="txt" contenteditable="true"></span><button class="del-point" aria-label="Delete point">&times;</button></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Complete payslips and jaaropgaaf showing gross and net — nothing omitted.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Employer letter confirming the structure of pay versus reimbursed expenses.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Cross-check against filed tax returns so the figures reconcile.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Offer full voluntary disclosure to remove any suggestion of concealment.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
         </ul>
         <button class="add-point">+ Add point</button>
-      </div>`;
+      </div>
+    </section>
+
+    <!-- Block 2 -->
+    <section class="block">
+      <div class="block-head">
+        <span class="num">2</span>
+        <div class="issue-title" contenteditable="true">Identifying and valuing all assets.</div>
+        <button class="del-block" title="Delete this issue" aria-label="Delete issue">&times;</button>
+      </div>
+      <div class="seg mine">
+        <p class="seg-label">My evidence — I can deal with it</p>
+        <ul class="points">
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Bank and savings statements for all accounts.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Property: WOZ value plus an independent market valuation, and the mortgage statement.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Pension overview (mijnpensioenoverzicht.nl) for both parties.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Investment, brokerage and any crypto account statements; vehicle values.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>
+      <div class="seg counter">
+        <p class="seg-label">Counter-argument</p>
+        <p class="counter-text" contenteditable="true">"He is concealing assets or undervaluing what is on the table."</p>
+      </div>
+      <div class="seg rebut">
+        <p class="seg-label">Evidence to deconstruct it</p>
+        <ul class="points">
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">A complete, itemised asset inventory with a statement behind every line.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Independent valuations rather than self-estimates.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Note the spouses' mutual duty of disclosure — invite the same openness in return.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">A clear paper trail showing nothing has moved or disappeared before filing.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>
+    </section>
+
+    <!-- Block 3 -->
+    <section class="block">
+      <div class="block-head">
+        <span class="num">3</span>
+        <div class="issue-title" contenteditable="true">Suspected hidden or undisclosed assets (the other party).</div>
+        <button class="del-block" title="Delete this issue" aria-label="Delete issue">&times;</button>
+      </div>
+      <div class="seg mine">
+        <p class="seg-label">My evidence — I can deal with it</p>
+        <ul class="points">
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Bank statements showing unexplained transfers, large cash withdrawals, or transfers to third parties.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">A lifestyle plainly inconsistent with the income that has been declared.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Records of any business interests, side income, or accounts not disclosed.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>
+      <div class="seg counter">
+        <p class="seg-label">Counter-argument</p>
+        <p class="counter-text" contenteditable="true">"There are no hidden assets — these are ordinary transactions and the accusation is baseless."</p>
+      </div>
+      <div class="seg rebut">
+        <p class="seg-label">Evidence to deconstruct it</p>
+        <ul class="points">
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Documented transaction trails, dated and sourced, not assertions.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">A formal request for disclosure of all accounts through the proper procedure.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Declared income set against demonstrable spending.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Only raise this where you have evidence; a forensic accountant if the amounts justify it (discuss with advocaat).</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>
+    </section>
+
+    <!-- Block 4 -->
+    <section class="block">
+      <div class="block-head">
+        <span class="num">4</span>
+        <div class="issue-title" contenteditable="true">Setting fair child support (kinderalimentatie).</div>
+        <button class="del-block" title="Delete this issue" aria-label="Delete issue">&times;</button>
+      </div>
+      <div class="seg mine">
+        <p class="seg-label">My evidence — I can deal with it</p>
+        <ul class="points">
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Both parties' incomes and the actual division of care from the parenting plan.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">A realistic breakdown of the children's costs (the NIBUD norms are the usual basis).</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Evidence of costs you carry directly during your care time.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>
+      <div class="seg counter">
+        <p class="seg-label">Counter-argument</p>
+        <p class="counter-text" contenteditable="true">"He should pay full child support regardless of how much care he actually provides."</p>
+      </div>
+      <div class="seg rebut">
+        <p class="seg-label">Evidence to deconstruct it</p>
+        <ul class="points">
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Child support is calculated on both parents' capacity and the care split — not one figure in isolation.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">A near-equal care division (per the custody plan) changes the transfer; link the two pillars.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Provide the cost breakdown so the calculation rests on real figures, not assumptions.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Use the standard calculation method via your advocaat or a mediator.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>
+    </section>
+
+    <!-- Block 5 -->
+    <section class="block">
+      <div class="block-head">
+        <span class="num">5</span>
+        <div class="issue-title" contenteditable="true">Spousal support (partneralimentatie).</div>
+        <button class="del-block" title="Delete this issue" aria-label="Delete issue">&times;</button>
+      </div>
+      <div class="seg mine">
+        <p class="seg-label">My evidence — I can deal with it</p>
+        <ul class="points">
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Both parties' earning capacity, qualifications and work history.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Marriage duration and the standard of living during it.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Your own committed costs: housing suitable for the children, childcare around your roster.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>
+      <div class="seg counter">
+        <p class="seg-label">Counter-argument</p>
+        <p class="counter-text" contenteditable="true">"The other party is entitled to substantial, long-term spousal support."</p>
+      </div>
+      <div class="seg rebut">
+        <p class="seg-label">Evidence to deconstruct it</p>
+        <ul class="points">
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Document the other party's genuine earning capacity and route back to work.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Note current Dutch rules limiting the duration of spousal support.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Show your obligations so capacity to pay is assessed realistically.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Distinguish a transitional contribution from an open-ended one.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>
+    </section>
+
+    <!-- Block 6 -->
+    <section class="block">
+      <div class="block-head">
+        <span class="num">6</span>
+        <div class="issue-title" contenteditable="true">Division of property and the matrimonial regime.</div>
+        <button class="del-block" title="Delete this issue" aria-label="Delete issue">&times;</button>
+      </div>
+      <div class="seg mine">
+        <p class="seg-label">My evidence — I can deal with it</p>
+        <ul class="points">
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Marriage certificate and any prenuptial agreement (huwelijkse voorwaarden).</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">An inventory of what each party brought in, and the position now.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Documentation of inheritances or gifts, which are often excluded from division.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">A full list of debts as well as assets.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>
+      <div class="seg counter">
+        <p class="seg-label">Counter-argument</p>
+        <p class="counter-text" contenteditable="true">"Everything should simply be split fifty-fifty, and the prenup should be set aside."</p>
+      </div>
+      <div class="seg rebut">
+        <p class="seg-label">Evidence to deconstruct it</p>
+        <ul class="points">
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Produce the huwelijkse voorwaarden and apply its actual terms.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Trace separate property (inheritance or gifts) kept demonstrably apart.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Show who contributed what, with documents.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Ensure debts are allocated alongside assets, not just the assets.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>
+    </section>
+  </div>
+
+    <div class="add-issue-wrap">
+      <button class="add-issue">+ Add issue</button>
+    </div>
+
+    <div class="core">
+    <h2>Core message to the court</h2>
+    <p contenteditable="true">Present one complete, documented and consistent financial picture, verifiable against tax filings and account statements, so the court can divide property fairly and set support on both parties’ real means and the actual division of care. Openness on your side makes any gaps on the other side more visible.</p>
+  </div>
+
+    <p class="disclaimer" contenteditable="true">Note: This is a personal preparation document, not legal advice. Verify all procedural points and admissibility with your advocaat before relying on anything here in court.</p>
+  </div>
+
+  <div class="sheet pillar" id="pillar-3">
+    <header class="doc-head">
+    <p class="eyebrow">Family court — conduct and safety</p>
+    <h1 contenteditable="true">Conduct and Safety — Argument Map</h1>
+    <p class="lede" contenteditable="true">Documenting conduct relevant to the children’s safety and wellbeing, and answering allegations, with factual, dated, verifiable records. The court weighs conduct only as it affects the children. Unsupported or exaggerated claims damage credibility; route genuine safety concerns through the proper authorities (Veilig Thuis, the huisarts, or police). Working framework — confirm procedural specifics with your advocaat.</p>
+  </header>
+
+    <div class="blocks">
+    <!-- Block 1 -->
+    <section class="block">
+      <div class="block-head">
+        <span class="num">1</span>
+        <div class="issue-title" contenteditable="true">Documenting conduct by the other parent that affects the children.</div>
+        <button class="del-block" title="Delete this issue" aria-label="Delete issue">&times;</button>
+      </div>
+      <div class="seg mine">
+        <p class="seg-label">My evidence — I can deal with it</p>
+        <ul class="points">
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Contemporaneous, dated notes made at the time — what happened, not how you felt about it.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Relevant messages and emails kept in full context, not isolated lines.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Observations from neutral third parties: school, daycare, the huisarts.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Each entry tied to a concrete effect on the children.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>
+      <div class="seg counter">
+        <p class="seg-label">Counter-argument</p>
+        <p class="counter-text" contenteditable="true">"These are just ordinary co-parenting disagreements, exaggerated to gain an advantage."</p>
+      </div>
+      <div class="seg rebut">
+        <p class="seg-label">Evidence to deconstruct it</p>
+        <ul class="points">
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Keep every record factual and dated rather than characterised.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Corroboration from independent people (teachers, GP) carries far more weight than your own account.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Show a pattern over time, not a single incident.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Anchor each item to how it affected a child, which is what the court weighs.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>
+    </section>
+
+    <!-- Block 2 -->
+    <section class="block">
+      <div class="block-head">
+        <span class="num">2</span>
+        <div class="issue-title" contenteditable="true">Concerns about safety, neglect, or substance misuse.</div>
+        <button class="del-block" title="Delete this issue" aria-label="Delete issue">&times;</button>
+      </div>
+      <div class="seg mine">
+        <p class="seg-label">My evidence — I can deal with it</p>
+        <ul class="points">
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Specific dated incidents, described plainly and precisely.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Independent documentation: Veilig Thuis, police, or medical records where they exist.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Accounts from witnesses who saw the relevant events.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>
+      <div class="seg counter">
+        <p class="seg-label">Counter-argument</p>
+        <p class="counter-text" contenteditable="true">"These are unfounded allegations raised only to damage the other parent."</p>
+      </div>
+      <div class="seg rebut">
+        <p class="seg-label">Evidence to deconstruct it</p>
+        <ul class="points">
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Rely on official and independent records over your own say-so.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Report genuine safety concerns through the proper channels — this also creates an objective record.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Avoid speculation or diagnosis; describe what was observed and let professionals assess.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Restraint where evidence is thin protects your credibility on the points that are strong.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>
+    </section>
+
+    <!-- Block 3 -->
+    <section class="block">
+      <div class="block-head">
+        <span class="num">3</span>
+        <div class="issue-title" contenteditable="true">Responding to allegations made against me.</div>
+        <button class="del-block" title="Delete this issue" aria-label="Delete issue">&times;</button>
+      </div>
+      <div class="seg mine">
+        <p class="seg-label">My evidence — I can deal with it</p>
+        <ul class="points">
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Your own involvement record (the custody pillar) showing day-to-day care.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Timeline or context evidence answering specific claims.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Your documented communication history showing tone and conduct.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">References from people who know you with the children.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>
+      <div class="seg counter">
+        <p class="seg-label">Counter-argument</p>
+        <p class="counter-text" contenteditable="true">"He is unstable, hostile, or unfit" — allegations directed at you.</p>
+      </div>
+      <div class="seg rebut">
+        <p class="seg-label">Evidence to deconstruct it</p>
+        <ul class="points">
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Contemporaneous records that directly contradict the specific allegation.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Neutral witnesses rather than family.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">A consistent, non-reactive message history — your existing correspondence record is exactly this.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Willingness to undergo any assessment the court considers; absence of any official finding against you.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>
+    </section>
+
+    <!-- Block 4 -->
+    <section class="block">
+      <div class="block-head">
+        <span class="num">4</span>
+        <div class="issue-title" contenteditable="true">Communication and co-parenting behaviour.</div>
+        <button class="del-block" title="Delete this issue" aria-label="Delete issue">&times;</button>
+      </div>
+      <div class="seg mine">
+        <p class="seg-label">My evidence — I can deal with it</p>
+        <ul class="points">
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">The full record of your civil, child-focused messages.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Proposals and accommodations you have made, with dates.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">A parenting-communication app log, if one is used.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>
+      <div class="seg counter">
+        <p class="seg-label">Counter-argument</p>
+        <p class="counter-text" contenteditable="true">"He is hostile, controlling, or uncooperative in communication."</p>
+      </div>
+      <div class="seg rebut">
+        <p class="seg-label">Evidence to deconstruct it</p>
+        <ul class="points">
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Produce the actual messages — let the tone speak for itself.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Highlight where you proposed solutions or gave way.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Show the contrast factually, without editorialising or name-calling.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Consistency over a long period is more persuasive than any single exchange.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>
+    </section>
+
+    <!-- Block 5 -->
+    <section class="block">
+      <div class="block-head">
+        <span class="num">5</span>
+        <div class="issue-title" contenteditable="true">Contact being withheld or undermined.</div>
+        <button class="del-block" title="Delete this issue" aria-label="Delete issue">&times;</button>
+      </div>
+      <div class="seg mine">
+        <p class="seg-label">My evidence — I can deal with it</p>
+        <ul class="points">
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Dated logs of cancelled, shortened, or denied contact.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Your documented attempts to maintain and reschedule contact.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Any disparagement in front of the children that is independently evidenced.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>
+      <div class="seg counter">
+        <p class="seg-label">Counter-argument</p>
+        <p class="counter-text" contenteditable="true">"The children simply don’t want to go" — or the claim that you are the alienating parent.</p>
+      </div>
+      <div class="seg rebut">
+        <p class="seg-label">Evidence to deconstruct it</p>
+        <ul class="points">
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">A clear, dated record of each missed or obstructed contact.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Neutral evidence (messages, third parties) rather than interpretation.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Your own consistent efforts to keep contact going and stay child-focused.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="true">Avoid the trap of responding with counter-disparagement, which courts view poorly.</span><button class="del-point" type="button" aria-label="Delete point">&times;</button></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+        </ul>
+        <button class="add-point">+ Add point</button>
+      </div>
+    </section>
+  </div>
+
+    <div class="add-issue-wrap">
+      <button class="add-issue">+ Add issue</button>
+    </div>
+
+    <div class="core">
+    <h2>Core message to the court</h2>
+    <p contenteditable="true">Keep every entry factual, dated, and tied to a concrete effect on the children; rely on neutral, independent corroboration over personal characterisation; and let documented patterns — not heated language — make the point. On contested conduct, restraint and verifiability are what persuade.</p>
+  </div>
+
+    <p class="disclaimer" contenteditable="true">Note: This is a personal preparation document, not legal advice. Verify all procedural points and admissibility with your advocaat before relying on anything here in court.</p>
+  </div>
+
+<script>
+(function(){
+  function pointMarkup(text){
+    return '<li class="point"><div class="point-row">'
+      + '<button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">\u203a</button>'
+      + '<span class="txt" contenteditable="true">' + (text || '') + '</span>'
+      + '<button class="del-point" type="button" aria-label="Delete point">&times;</button></div>'
+      + '<div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div>'
+      + '<div class="evidence-field" contenteditable="true" data-ph="Add documents, exhibit numbers, dates, witnesses, notes\u2026"></div></div></li>';
+  }
+  function togglePoint(point){
+    if(!point) return;
+    var ev = point.querySelector('.evidence');
+    var tg = point.querySelector('.toggle');
+    if(ev.hasAttribute('hidden')){
+      ev.removeAttribute('hidden'); point.classList.add('open');
+      if(tg) tg.setAttribute('aria-expanded','true');
+      var f = ev.querySelector('.evidence-field'); if(f) f.focus();
+    } else {
+      ev.setAttribute('hidden',''); point.classList.remove('open');
+      if(tg) tg.setAttribute('aria-expanded','false');
+    }
+  }
+  function renumber(pillar){
+    pillar.querySelectorAll('.block .num').forEach(function(n,i){ n.textContent = i+1; });
+  }
+  function addBlock(pillar){
+    var blocks = pillar.querySelector('.blocks');
+    var n = blocks.querySelectorAll('.block').length + 1;
+    var sec = document.createElement('section');
+    sec.className = 'block';
+    sec.innerHTML =
+      '<div class="block-head"><span class="num">' + n + '</span>'
+      + '<div class="issue-title" contenteditable="true"></div>'
+      + '<button class="del-block" title="Delete this issue" aria-label="Delete issue">&times;</button></div>'
+      + '<div class="seg mine"><p class="seg-label">My evidence — I can deal with it</p>'
+      + '<ul class="points">' + pointMarkup('') + '</ul>'
+      + '<button class="add-point">+ Add point</button></div>'
+      + '<div class="seg counter"><p class="seg-label">Counter-argument</p>'
+      + '<p class="counter-text" contenteditable="true"></p></div>'
+      + '<div class="seg rebut"><p class="seg-label">Evidence to deconstruct it</p>'
+      + '<ul class="points">' + pointMarkup('') + '</ul>'
+      + '<button class="add-point">+ Add point</button></div>';
     blocks.appendChild(sec);
+    renumber(pillar);
     sec.querySelector('.issue-title').focus();
   }
-
-  // Download the current edited document as a fresh, still-editable HTML file
+  function show(id){
+    document.querySelectorAll('.pillar').forEach(function(p){ p.classList.toggle('active', p.id===id); });
+    document.querySelectorAll('.menu-btn').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-target')===id); });
+    window.scrollTo(0,0);
+  }
+  document.addEventListener('click', function(e){
+    var t = e.target;
+    if(t.classList.contains('menu-btn')){ show(t.getAttribute('data-target')); return; }
+    if(t.classList.contains('del-point')){ t.closest('li').remove(); return; }
+    if(t.classList.contains('add-point')){
+      var ul = t.previousElementSibling;
+      ul.insertAdjacentHTML('beforeend', pointMarkup(''));
+      ul.lastElementChild.querySelector('.txt').focus(); return;
+    }
+    if(t.classList.contains('del-block')){
+      if(confirm('Delete this entire issue?')){ var pil = t.closest('.pillar'); t.closest('.block').remove(); renumber(pil); }
+      return;
+    }
+    if(t.classList.contains('add-issue')){ addBlock(t.closest('.pillar')); return; }
+    var row = t.closest('.point-row');
+    if(row && !t.classList.contains('txt')){ togglePoint(row.parentElement); return; }
+  });
   function download(){
-    const clone = document.documentElement.cloneNode(true);
-    // strip transient focus styling artifacts if any
-    const html = '<!DOCTYPE html>\n' + clone.outerHTML;
-    const blob = new Blob([html], {type:'text/html'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'custody-argument-map.html';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+    var clone = document.documentElement.cloneNode(true);
+    var html = '<!DOCTYPE html>\n' + clone.outerHTML;
+    var blob = new Blob([html], {type:'text/html'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = 'divorce-case-file.html';
+    document.body.appendChild(a); a.click(); a.remove();
     URL.revokeObjectURL(url);
   }
   window.download = download;
+})();
 </script>
 </body>
 </html>
