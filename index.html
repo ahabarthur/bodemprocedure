@@ -210,8 +210,6 @@
 
   /* inline editing affordances */
   [contenteditable]{outline:none;border-radius:3px;}
-  [contenteditable]:hover{box-shadow:inset 0 0 0 1px var(--line);}
-  [contenteditable]:focus{box-shadow:inset 0 0 0 2px var(--focus);background:rgba(184,134,59,.06);}
 
   .del-point,.add-point,.del-block{
     font-family:var(--sans);
@@ -580,6 +578,7 @@
           <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="false">Payslips, employment contract, and annual statement (jaaropgaaf) for the full period.</span></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="false" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
           <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="false">Most recent tax returns (aangifte inkomstenbelasting) and assessments, for consistency.</span></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="false" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
           <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="false">For a pilot: separate base salary from per-diems and allowances, which are expense reimbursements, not income.</span></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="false" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
+          <li class="point"><div class="point-row"><button class="toggle" type="button" aria-expanded="false" aria-label="Show evidence">›</button><span class="txt" contenteditable="false">Recent salary is temporarily inflated by a 6-month short-term increase (the RESTART PROTOCOL — reduced pilot numbers and longer working hours), which ends in October. The protocol has since been called unnecessary, and pilots are now being offered unpaid leave.</span></div><div class="evidence" hidden><div class="evidence-label">Evidence &amp; exhibits</div><div class="evidence-field" contenteditable="false" data-ph="Add documents, exhibit numbers, dates, witnesses, notes…"></div></div></li>
         </ul>
       </div>
       <div class="seg counter">
